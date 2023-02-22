@@ -1,5 +1,6 @@
 package com.osorio.springbootreactor;
 
+import com.osorio.springbootreactor.models.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,18 +18,27 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Flux<String>  nombres = Flux.just("Jose", "Carlos", "Osorio")
+        Flux<Usuario>  nombres = Flux.just("Jose", "Carlos", "MrX" , "Osorio")
+                .map(nombre -> new Usuario(nombre.toLowerCase(), "Apellido") )
                 .doOnNext( e -> {
-                    if(e.isEmpty()){
+                    if(e.getNombre().isEmpty()){
                         throw new RuntimeException("Lista vacia");
                     }else{
-                        System.out.println(e);
+                        System.out.println(e.getNombre());
                     }
+                }).map( e -> {
+                    e.setNombre(e.getNombre().toUpperCase());
+                    return  e;
                 });
 
-        nombres.subscribe( e -> Log.info(e), err -> {
+        nombres.subscribe(e -> Log.info(e.getNombre()), err -> {
             System.out.println("Ocurrio un error...");
-        } );
+        }, new Runnable() {
+            @Override
+            public void run() {
+               Log.info("Se completó el metodo");
+            }
+        });
 
 
     }
