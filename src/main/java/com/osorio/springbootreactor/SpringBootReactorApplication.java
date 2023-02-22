@@ -8,6 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Flux;
 
+/*
+*Los Observables son inmutables.
+* */
 @SpringBootApplication
 public class SpringBootReactorApplication implements CommandLineRunner {
 
