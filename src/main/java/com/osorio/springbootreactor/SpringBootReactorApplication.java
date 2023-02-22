@@ -18,20 +18,31 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Flux<Usuario>  nombres = Flux.just("Jose", "Carlos", "MrX" , "Osorio")
+        Flux<Usuario>  nombres = Flux.just("Jose",
+                        "Carlos",
+                        "MrX" ,
+                        "osorio",
+                        "Jose osorio",
+                        "Manuel Gomez",
+                        "Juan Ortega")
                 .map(nombre -> new Usuario(nombre.toLowerCase(), "Apellido") )
+
                 .doOnNext( e -> {
                     if(e.getNombre().isEmpty()){
-                        throw new RuntimeException("Lista vacia");
+                        throw new RuntimeException("Hay elementos vacios.");
                     }else{
                         System.out.println(e.getNombre());
                     }
                 }).map( e -> {
                     e.setNombre(e.getNombre().toUpperCase());
                     return  e;
-                });
+                })
+                .filter(user -> user.getNombre().contains("OSORIO") );
 
-        nombres.subscribe(e -> Log.info(e.getNombre()), err -> {
+        nombres.subscribe(e -> {
+            Log.info("Se imprimiran los nombres de los usuarios.");
+            Log.info(e.getNombre());
+        }, err -> {
             System.out.println("Ocurrio un error...");
         }, new Runnable() {
             @Override
