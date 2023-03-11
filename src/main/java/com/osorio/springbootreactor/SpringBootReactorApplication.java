@@ -8,6 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 *Los Observables son inmutables.
 * */
@@ -21,13 +24,22 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Flux<Usuario>  nombres = Flux.just("Jose",
-                        "Carlos",
-                        "MrX" ,
-                        "osorio",
-                        "Jose osorio",
-                        "Manuel Gomez",
-                        "Juan Ortega")
+
+        List<String> usuariosList = new ArrayList<>();
+
+
+        usuariosList.add("Jose");
+        usuariosList.add("Carlos");
+        usuariosList.add("MrX");
+        usuariosList.add("Jose osorio");
+        usuariosList.add("Manuel Gomez");
+        usuariosList.add("Juan Ortega");
+
+
+
+
+
+        Flux<Usuario>  nombres = Flux.fromIterable(usuariosList)
                 .map(nombre -> new Usuario(nombre.toLowerCase(), "Apellido") )
 
                 .doOnNext( e -> {
