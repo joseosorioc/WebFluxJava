@@ -27,7 +27,8 @@ public class SpringBootReactorApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         //ejemploIterable();
-        ejemploFlatMap();
+      // ejemploFlatMap();
+        ejemploToString();
 
     }
 
@@ -78,8 +79,6 @@ public class SpringBootReactorApplication implements CommandLineRunner {
     }
 
 
-
-
     public void ejemploIterable() throws Exception {
 
         List<String> usuariosList = new ArrayList<>();
@@ -126,6 +125,39 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
     }
 
+    public void ejemploToString(){
+        List<Usuario> usuariosList = new ArrayList<>();
+
+
+        usuariosList.add(new Usuario("Jose", "Osorio"));
+        usuariosList.add(new Usuario("Carlos", "Torres"));
+        usuariosList.add(new Usuario("MrX", "Havertz"));
+        usuariosList.add(new Usuario("Pedro", "Perez"));
+        usuariosList.add(new Usuario("Paulina", "Torres"));
+        usuariosList.add(new Usuario("Juan", "Ortega"));
+
+
+        Flux.fromIterable(usuariosList)
+                .map(usuario ->  usuario.getNombre().toLowerCase())
+                .flatMap( nombre -> {
+                    if(nombre.equalsIgnoreCase("jose") ){
+                        return Mono.just(nombre);
+                    }else{
+                        return Mono.empty();
+                    }
+                })
+                .subscribe(e -> {
+                    Log.info("Se imprimiran los nombres de los usuarios.");
+                    Log.info(e.toUpperCase());
+                }, err -> {
+                    System.out.println("Ocurrió un error...");
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.info("Se completó el metodo");
+                    }
+                });
+    }
 
 
 }
