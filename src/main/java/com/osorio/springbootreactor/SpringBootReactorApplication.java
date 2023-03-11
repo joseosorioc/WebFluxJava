@@ -28,7 +28,8 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
         //ejemploIterable();
       // ejemploFlatMap();
-        ejemploToString();
+        // ejemploToString();
+        ejemploCollectList();
 
     }
 
@@ -159,5 +160,27 @@ public class SpringBootReactorApplication implements CommandLineRunner {
                 });
     }
 
+    public void ejemploCollectList(){
+        List<Usuario> usuariosList = new ArrayList<>();
+
+
+        usuariosList.add(new Usuario("Jose", "Osorio"));
+        usuariosList.add(new Usuario("Carlos", "Torres"));
+        usuariosList.add(new Usuario("MrX", "Havertz"));
+        usuariosList.add(new Usuario("Pedro", "Perez"));
+        usuariosList.add(new Usuario("Paulina", "Torres"));
+        usuariosList.add(new Usuario("Juan", "Ortega"));
+
+
+        Flux.fromIterable(usuariosList)
+                .collectList()   // retorna <Mono<T>> : Normalmente emite cada elementos de la lista
+                                 // pero con collectList() se evita eso, y se emite la lista completa,
+                                // en este caso es Mono<List<usuariosList>>.
+                .subscribe(list -> {
+                    list.forEach( element -> {
+                        System.out.println(element.toString());
+                    });
+                });
+    }
 
 }

@@ -17,6 +17,14 @@ public class Usuario {
         return nombre;
     }
 
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "nombre='" + nombre + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                '}';
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
