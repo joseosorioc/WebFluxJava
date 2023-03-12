@@ -1,6 +1,8 @@
 package com.osorio.springbootreactor;
 
+import com.osorio.springbootreactor.models.Comentario;
 import com.osorio.springbootreactor.models.Usuario;
+import com.osorio.springbootreactor.models.UsuarioComentario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -29,8 +31,8 @@ public class SpringBootReactorApplication implements CommandLineRunner {
         //ejemploIterable();
       // ejemploFlatMap();
         // ejemploToString();
-        ejemploCollectList();
-
+       // ejemploCollectList();
+        ejemploUsuarioComentarioFlatMap();
     }
 
 
@@ -183,4 +185,27 @@ public class SpringBootReactorApplication implements CommandLineRunner {
                 });
     }
 
+    public void ejemploUsuarioComentarioFlatMap(){
+        Mono<Usuario> usuarioMono = Mono.fromCallable(() -> new Usuario("Jhon", "Doe"));
+
+        Mono<Comentario> comentariosUsuarioMono = Mono.fromCallable(() -> {
+            Comentario comentario = new Comentario();
+
+            comentario.addComentario("Prueba Jose 1");
+            comentario.addComentario("Prueba Jose 2");
+            comentario.addComentario("Prueba Jose 3");
+
+            return comentario;
+        });
+
+        usuarioMono
+                .flatMap(usuario ->
+                        comentariosUsuarioMono
+                                .map(comentario -> new UsuarioComentario(usuario, comentario)))
+                .subscribe(element -> {
+                    Log.info(element.toString());
+                });
+
+
+    }
 }
