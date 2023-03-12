@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +36,40 @@ public class SpringBootReactorApplication implements CommandLineRunner {
         // ejemploUsuarioComentarioFlatMap();
        // ejemploUsuarioComentarioZipWith();
        // ejemploUsuarioComentarioZipWithForma2();
-        zipWithConRangos();
+       // zipWithConRangos();
+        // ejemploInterval();
+        ejemploDalayElements();
     }
 
+    /***
+     * interval: permite definir un intervalo de tiempo para el flujo
+     * , es decir, lo que también se le conoce como un delay.
+     */
+
+    public void ejemploInterval(){
+        Flux<Integer> rango = Flux.range(1,12);
+        Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
+
+        rango.zipWith(interval, (rangeStream, IntervalStream) -> {
+            return rangeStream;
+        }).doOnNext( p -> {
+            Log.info(p.toString());
+        }).blockLast(); // Estamos utilizando blocking, para bloquear el flujo, Los flujos en RxJava por defecto son NonBlocking,
+                        // y se recomienda trabajar con NonBlocking (objetivo de la programacion reactiva)
+                        // para evitar cuellos de botella.
+                        // OJO: No se recomienda utilizar blocking, solo para casos especificos.
+    }
+
+
+    // el mismo ejemplo.
+    public void ejemploDalayElements(){
+        Flux<Integer> rango = Flux.range(1,12)
+                .delayElements(Duration.ofSeconds(1))
+                .doOnNext(p -> {
+                    Log.info(p.toString());
+                });
+        rango.blockLast(); // el blocklast lo que hace es suscribirnos y terminar con el flujo, hasta el ultimo elemento.
+    }
 
     /**
      * Range: permite crear un flujo de un rango determinado, en la documentacion:
@@ -79,8 +111,6 @@ public class SpringBootReactorApplication implements CommandLineRunner {
         usuariosList.add("Jose osorio");
         usuariosList.add("Manuel Gomez");
         usuariosList.add("Juan Ortega");
-
-
 
 
 
