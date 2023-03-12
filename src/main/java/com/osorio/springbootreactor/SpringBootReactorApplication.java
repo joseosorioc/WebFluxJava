@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /*
 *Los Observables son inmutables.
@@ -38,14 +39,14 @@ public class SpringBootReactorApplication implements CommandLineRunner {
        // ejemploUsuarioComentarioZipWithForma2();
        // zipWithConRangos();
         // ejemploInterval();
-        ejemploDalayElements();
+       // ejemploDalayElements();
+        ejemploIntervalInfinito();
     }
 
     /***
      * interval: permite definir un intervalo de tiempo para el flujo
      * , es decir, lo que también se le conoce como un delay.
      */
-
     public void ejemploInterval(){
         Flux<Integer> rango = Flux.range(1,12);
         Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
@@ -61,7 +62,7 @@ public class SpringBootReactorApplication implements CommandLineRunner {
     }
 
 
-    // el mismo ejemplo.
+    // el mismo ejemplo con interval.
     public void ejemploDalayElements(){
         Flux<Integer> rango = Flux.range(1,12)
                 .delayElements(Duration.ofSeconds(1))
@@ -69,6 +70,36 @@ public class SpringBootReactorApplication implements CommandLineRunner {
                     Log.info(p.toString());
                 });
         rango.blockLast(); // el blocklast lo que hace es suscribirnos y terminar con el flujo, hasta el ultimo elemento.
+    }
+
+    // interval infinito.
+    public void ejemploIntervalInfinito() throws InterruptedException {
+
+        /**
+         * permite sincronizar entre Threads, lo que nos permite esperar
+         * por uno o más hilos. CountDownLatch (desde Java 5) permite
+         * hacer lo mismo que hacemos con el wait y notify de una forma
+         * más sencilla (y con mucho menos código)
+         */
+        CountDownLatch latch = new CountDownLatch(1);
+
+        Flux.interval(Duration.ofSeconds(1))
+                .doOnTerminate(latch :: countDown )
+                .flatMap(i -> {
+                    if(i>5){
+                        return Flux.error(new InterruptedException("El número es mayor a 5"));
+                    }else{
+                        return Flux.just(i);
+                    }
+                })
+                .map(i -> "Hola " + i )
+                .retry(3)   // permite manejar los reintentos,
+                                     // luego de que ocurra algún fallo.
+                .doOnNext(Log::info)
+                .subscribe();
+
+        latch.await();
+
     }
 
     /**
@@ -90,8 +121,6 @@ public class SpringBootReactorApplication implements CommandLineRunner {
         Flux.range(20,45).subscribe(p-> System.out.println(p));
 
     }
-
-
 
 
     /**
