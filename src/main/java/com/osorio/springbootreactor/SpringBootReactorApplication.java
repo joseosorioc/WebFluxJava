@@ -34,8 +34,32 @@ public class SpringBootReactorApplication implements CommandLineRunner {
        // ejemploCollectList();
         // ejemploUsuarioComentarioFlatMap();
        // ejemploUsuarioComentarioZipWith();
-        ejemploUsuarioComentarioZipWithForma2();
+       // ejemploUsuarioComentarioZipWithForma2();
+        zipWithConRangos();
     }
+
+
+    /**
+     * Range: permite crear un flujo de un rango determinado, en la documentacion:
+     * create an Observable that emits a particular range of sequential integers,
+     * The Range operator emits a range of sequential integers, in order,
+     * where you select the start of the range and its length.
+     * range(20 <start> ,45 <count>) : donde start es el parámetro (numero) donde va a iniciar
+     * y count la cantidad a contar.
+     */
+
+    public void zipWithConRangos(){
+        Flux.just(5,10,15,20).map(t -> (t*2)).zipWith(Flux.range(40,2) , (rangoTransformado, numerosdelRango ) -> {
+            return  "flux1: " + rangoTransformado + " , " +  "flux2: " + numerosdelRango ;
+        } ).subscribe(System.out::println);
+
+        System.out.println("***********************************");
+
+        Flux.range(20,45).subscribe(p-> System.out.println(p));
+
+    }
+
+
 
 
     /**
