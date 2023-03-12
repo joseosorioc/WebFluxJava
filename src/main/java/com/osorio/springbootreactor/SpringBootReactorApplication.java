@@ -32,7 +32,9 @@ public class SpringBootReactorApplication implements CommandLineRunner {
       // ejemploFlatMap();
         // ejemploToString();
        // ejemploCollectList();
-        ejemploUsuarioComentarioFlatMap();
+        // ejemploUsuarioComentarioFlatMap();
+       // ejemploUsuarioComentarioZipWith();
+        ejemploUsuarioComentarioZipWithForma2();
     }
 
 
@@ -81,6 +83,67 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
     }
 
+    /**
+     * ZipWith:combine the emissions of multiple Observables together via
+     * a specified function and emit single items for each combination
+     * based on the results of this function.
+     * consiste en tomar dos flujos y luego los combina.
+     *
+     * @throws Exception
+     */
+    public void ejemploUsuarioComentarioZipWith(){
+        Mono<Usuario> usuarioMono = Mono.fromCallable(() -> new Usuario("Jhon", "Doe"));
+
+        Mono<Comentario> comentariosUsuarioMono = Mono.fromCallable(() -> {
+            Comentario comentario = new Comentario();
+
+            comentario.addComentario("Prueba Jose 1");
+            comentario.addComentario("Prueba Jose 2");
+            comentario.addComentario("Prueba Jose 3");
+
+            return comentario;
+        });
+
+
+        usuarioMono // partimos del flujo inicial,
+                    // aunque tambien podriamos partir del flujo ComentariosUsuarioMono.
+                .zipWith(comentariosUsuarioMono, (usuario, comentariosUsuario) -> // el primer argumento del zipWith es "other",
+                                                                                // que corresponde con el otro flujo que queremos tomar.
+                                                                                // Luego, le pasamos los dos nombres de referencia
+                                                                                // para consumir esa lambda
+                        new UsuarioComentario(usuario,comentariosUsuario))
+                .subscribe(element -> {
+                    Log.info(element.toString());
+                });
+
+
+    }
+
+    public void ejemploUsuarioComentarioZipWithForma2(){
+        Mono<Usuario> usuarioMono = Mono.fromCallable(() -> new Usuario("Jhon", "Doe"));
+
+        Mono<Comentario> comentariosUsuarioMono = Mono.fromCallable(() -> {
+            Comentario comentario = new Comentario();
+
+            comentario.addComentario("Prueba Jose 1");
+            comentario.addComentario("Prueba Jose 2");
+            comentario.addComentario("Prueba Jose 3");
+
+            return comentario;
+        });
+
+
+        usuarioMono
+                .zipWith(comentariosUsuarioMono)
+                .map(tuple -> {
+                    return new UsuarioComentario(tuple.getT1(), tuple.getT2());
+                })
+                .subscribe(element -> {
+                    Log.info(element.toString());
+                });
+
+
+    }
 
     public void ejemploIterable() throws Exception {
 
@@ -208,4 +271,7 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
 
     }
+
+
+
 }
