@@ -40,7 +40,25 @@ public class SpringBootReactorApplication implements CommandLineRunner {
        // zipWithConRangos();
         // ejemploInterval();
        // ejemploDalayElements();
-        ejemploIntervalInfinito();
+        // ejemploIntervalInfinito();
+        ejemploContrapresion();
+    }
+
+    // ejemplo manejando la contrapresión
+    public void ejemploContrapresion(){
+        Flux.range(1,10)
+                .log()
+                .limitRate(2) // limitRate: permite dividir en lotes los elementos del flujo
+                                        // en este caso es en lotes de 2. Pero hay que tener en cuenta algo...
+                                        // por dentro maneja un algoritmo interno que de acuerdo a la cantidad de elementos, a
+                                        // la calidad de la conexion es cuanto elementos va a traer por request, por eso puede
+                                        // que después baje a mucha menos cantidad. Esto permite configurar el
+                                        // número de elementos a traer a la vez. Una característica interesante
+                                        // es que el límite se aplica incluso cuando el suscriptor pide más
+                                        // eventos para procesar. El emisor divide los eventos en fragmentos
+                                        // evitando consumir más del límite en cada petición o request.
+
+                .subscribe();
     }
 
     /***
